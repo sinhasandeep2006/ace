@@ -193,7 +193,7 @@ export default function Game() {
     axios.put(
       "https://ace-76pn.onrender.com/api/score",
       { level: lvl, score: scr },
-      { headers: { Authorization: localStorage.getItem("token") } }
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     );
   }
 
