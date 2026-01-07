@@ -24,7 +24,7 @@ export default function Score() {
         "https://ace-76pn.onrender.com/api/score/me",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
