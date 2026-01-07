@@ -5,6 +5,6 @@ export const API_PATHS = {
   },
   SCORE: {
     SAVE: "/score",
-    GET: "/score",
+    GET: "/score/me",
   },
 };

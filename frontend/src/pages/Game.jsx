@@ -190,7 +190,7 @@ export default function Game() {
 
   function saveScore(lvl, scr) {
     axios.put(
-      "http://localhost:5000/api/score",
+      "https://ace-76pn.onrender.com/api/score",
       { level: lvl, score: scr },
       { headers: { Authorization: localStorage.getItem("token") } }
     );
