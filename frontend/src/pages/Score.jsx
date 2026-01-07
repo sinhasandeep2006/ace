@@ -9,36 +9,45 @@ export default function Score() {
   const [scoreData, setScoreData] = useState({ score: 0, level: 0 });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchScore = async () => {
-      try {
-        const token = localStorage.getItem("token");
+ useEffect(() => {
+  const fetchScore = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        if (!token) {
-          console.log("No token found");
-          setLoading(false);
-          return;
-        }
-
-        const res = await axios.get(
-          "https://ace-76pn.onrender.com/api/score/me",
-          {
-            headers: {
-              Authorization: token, // ✅ IMPORTANT FIX
-            },
-          }
-        );
-
-        setScoreData(res.data);
-      } catch (err) {
-        console.error("Failed to fetch score:", err);
-      } finally {
+      if (!token) {
+        console.log("No token found");
         setLoading(false);
+        return;
       }
-    };
 
-    fetchScore();
-  }, []);
+      const res = await axios.get(
+        "https://ace-76pn.onrender.com/api/score/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Score API response:", res.data);
+
+      setScoreData({
+        score: res.data.score ?? 0,
+        level: res.data.level ?? 0,
+      });
+    } catch (err) {
+      console.error(
+        "Failed to fetch score:",
+        err.response?.data || err.message
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchScore();
+}, []);
+
 
   if (loading) {
     return (
