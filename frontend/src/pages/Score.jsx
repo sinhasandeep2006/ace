@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import heroImg from "../assets/hero.png";
-
+import bg from "./bg4.webp"
 export default function Score() {
   const navigate = useNavigate();
 
@@ -49,8 +49,13 @@ export default function Score() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <div className="bg-gray-800 rounded-2xl shadow-xl px-8 py-10 text-center w-[90%] max-w-md">
+    <div style={{ 
+                backgroundImage:`url(${bg})`,
+                backgroundSize:'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }} className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="bg-black/60 rounded-2xl shadow-xl px-8 py-10 text-center w-[90%] max-w-md">
         <img src={heroImg} alt="Hero" className="w-40 mx-auto mb-6" />
 
         <h1 className="text-3xl font-bold text-white mb-4">🏆 Game Over</h1>

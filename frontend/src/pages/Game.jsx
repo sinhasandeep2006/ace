@@ -3,7 +3,7 @@ import axios from "axios";
 
 import heroImg from "../assets/hero.png";
 import villainImg from "../assets/villion.png";
-
+import bg from "./bg2.png"
 export default function Game() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -198,13 +198,18 @@ export default function Game() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-700 flex flex-col">
+    <div style={{ 
+            backgroundImage:`url(${bg})`,
+            backgroundSize:'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }} className="min-h-screen bg-gray-700 flex flex-col">
       <h3 className="text-center text-white py-3">
         Level: {level} | Score: {score} | Kills: {kills}
       </h3>
 
       <div className="flex-1 flex items-center justify-center">
-        <canvas ref={canvasRef} className="bg-gray-500 rounded-xl shadow-lg" />
+        <canvas ref={canvasRef} className="bg-black/60 border-black  rounded-xl shadow-lg" />
       </div>
 
       <div className="pb-6 flex justify-center">

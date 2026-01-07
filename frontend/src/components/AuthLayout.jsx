@@ -1,12 +1,17 @@
-
+import imag from './mylog.jpg'
 const AuthLayout = ({ children }) => {
   return (
      <div
-      
+      style={{ 
+        backgroundImage:`url(${imag})`,
+        backgroundSize:'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
       className="w-full h-screen flex items-center justify-center"
     >
       {/* Dark overlay */}
-       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+       <div className=" bg-black/80 backdrop-blur-sm z-0"></div>
       <div
         className="
           relative z-10 w-full max-w-md

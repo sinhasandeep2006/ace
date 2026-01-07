@@ -32,10 +32,28 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
 
           {/* Protected */}
-          <Route path="/home" element={<Home />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/level-passed" element={<LevelPassed />} />
-          <Route path="/score" element={<Score />} />
+          <Route
+            path="/home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/game"
+            element={
+              <PrivateRoute>
+                <Game />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/level-passed" element={ <PrivateRoute>
+                < LevelPassed/>
+              </PrivateRoute>} />
+            <Route path="/score" element={ <PrivateRoute>
+                < Score/>
+              </PrivateRoute>} />
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
