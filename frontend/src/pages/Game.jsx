@@ -44,8 +44,8 @@ export default function Game() {
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
 
-    const cssWidth = Math.min(window.innerWidth - 24, 420);
-    const cssHeight = 240;
+    const cssWidth = 400;
+    const cssHeight = 400;
 
     canvas.style.width = cssWidth + "px";
     canvas.style.height = cssHeight + "px";
@@ -74,16 +74,17 @@ export default function Game() {
   }
 
   /* ---------- FIRE (0.5s delay) ---------- */
-  function fire() {
-    const now = Date.now();
-    if (now - lastFireRef.current < 500) return;
+ function fire() {
+  const now = Date.now();
+  if (now - lastFireRef.current < 500) return;
 
-    lastFireRef.current = now;
-    bulletsRef.current.push({
-      x: hero.x + hero.w,
-      y: hero.y + hero.h / 2,
-    });
-  }
+  lastFireRef.current = now;
+
+  bulletsRef.current.push({
+    x: hero.x + hero.w,
+    y: hero.y + hero.h / 2, // ✅ STORE CENTER
+  });
+}
 
   /* ---------- GAME LOOP ---------- */
   useEffect(() => {

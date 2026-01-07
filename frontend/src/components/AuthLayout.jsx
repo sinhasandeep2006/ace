@@ -1,22 +1,12 @@
-import backgrp from "../assets/loginace.png";
 
 const AuthLayout = ({ children }) => {
   return (
-    <div
-      style={{
-        backgroundImage: `url(${backgrp})`,
-      }}
-      className="
-         w-full h-screen 
-        flex items-center justify-center
-       bg-(backgrounImage
-         bg-no-repeat
-      "
+     <div
+      
+      className="w-full h-screen flex items-center justify-center"
     >
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-
-      {/* Content box */}
+       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
       <div
         className="
           relative z-10 w-full max-w-md
@@ -29,7 +19,7 @@ const AuthLayout = ({ children }) => {
         "
       >
         <h1 className="text-2xl font-bold text-red-700 drop-shadow-[0_0_10px_red] mb-2">
-          Ace UpsideDown
+          Ace sideDown
         </h1>
 
         <h3 className="text-xl font-semibold mb-4 text-white">

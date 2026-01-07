@@ -10,7 +10,7 @@ import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import UserProvider from "./context/UserContext";
 import Home from "./pages/Home";
-
+import Score from "./pages/Score";
 import Game from "./pages/Game";
 
 import LevelPassed from "./pages/LevelPassed";
@@ -32,26 +32,10 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
 
           {/* Protected */}
-          <Route
-            path="/home"
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/game"
-            element={
-              <PrivateRoute>
-                <Game />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/level-passed" element={ <PrivateRoute>
-                < LevelPassed/>
-              </PrivateRoute>} />
-
+          <Route path="/home" element={<Home />} />
+          <Route path="/game" element={<Game />} />
+          <Route path="/level-passed" element={<LevelPassed />} />
+          <Route path="/score" element={<Score />} />
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
