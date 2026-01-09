@@ -3,7 +3,8 @@ import axios from "axios";
 
 import heroImg from "../assets/hero.png";
 import villainImg from "../assets/villion.png";
-import bg from "./bg2.png"
+import bg from "./bg2.png";
+
 export default function Game() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -22,12 +23,15 @@ export default function Game() {
   const [kills, setKills] = useState(0);
   const [levelComplete, setLevelComplete] = useState(false);
 
+  const [countdown, setCountdown] = useState(3);
+  const [isCounting, setIsCounting] = useState(true);
+
   const HERO_W = 100;
   const HERO_H = 100;
 
   const hero = {
     x: 30,
-    y: 0, // set dynamically
+    y: 0,
     w: HERO_W,
     h: HERO_H,
   };
@@ -38,34 +42,52 @@ export default function Game() {
     villainImgRef.current.src = villainImg;
   }, []);
 
-  /* ---------- RESIZE (FIXED) ---------- */
+  /* ---------- RESIZE ---------- */
   function resizeCanvas() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
 
-    const cssWidth = 400;
-    const cssHeight = 400;
+    const cssW = 400;
+    const cssH = 400;
 
-    canvas.style.width = cssWidth + "px";
-    canvas.style.height = cssHeight + "px";
+    canvas.style.width = cssW + "px";
+    canvas.style.height = cssH + "px";
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
 
-    canvas.width = cssWidth * dpr;
-    canvas.height = cssHeight * dpr;
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // ✅ RESET SCALE
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctxRef.current = ctx;
 
-    hero.y = cssHeight / 2 - hero.h / 2; // ✅ TRUE CENTER
+    hero.y = cssH / 2 - hero.h / 2;
   }
+
+  /* ---------- COUNTDOWN ---------- */
+  useEffect(() => {
+    setIsCounting(true);
+    setCountdown(3);
+
+    const timer = setInterval(() => {
+      setCountdown((c) => {
+        if (c === 1) {
+          clearInterval(timer);
+          setIsCounting(false);
+          spawnVillain();
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [level]);
 
   /* ---------- SPAWN VILLAIN ---------- */
   function spawnVillain() {
     const canvas = canvasRef.current;
-
     villainRef.current = {
-      x: canvas.width / (window.devicePixelRatio || 1) - 70, // ✅ RIGHT EDGE
-      y: hero.y, // ✅ SAME Y AXIS
+      x: canvas.width / (window.devicePixelRatio || 1) - 70,
+      y: hero.y,
       w: 100,
       h: 100,
       speed: level === 3 ? Math.random() * 6 + 5 : 2 + level,
@@ -73,30 +95,28 @@ export default function Game() {
     };
   }
 
-  /* ---------- FIRE (0.5s delay) ---------- */
- function fire() {
-  const now = Date.now();
-  if (now - lastFireRef.current < 500) return;
+  /* ---------- FIRE ---------- */
+  function fire() {
+    if (isCounting || levelComplete) return;
 
-  lastFireRef.current = now;
+    const now = Date.now();
+    if (now - lastFireRef.current < 500) return;
+    lastFireRef.current = now;
 
-  bulletsRef.current.push({
-    x: hero.x + hero.w,
-    y: hero.y + hero.h / 2, // ✅ STORE CENTER
-  });
-}
+    bulletsRef.current.push({
+      x: hero.x + hero.w,
+      y: hero.y + hero.h / 2,
+    });
+  }
 
   /* ---------- GAME LOOP ---------- */
   useEffect(() => {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    spawnVillain();
     killsRef.current = 0;
 
     function loop() {
-      if (levelComplete) return;
-
       const ctx = ctxRef.current;
       const canvas = canvasRef.current;
 
@@ -110,21 +130,20 @@ export default function Game() {
       // HERO
       ctx.drawImage(heroImgRef.current, hero.x, hero.y, hero.w, hero.h);
 
-      const villain = villainRef.current;
+      if (!isCounting && villainRef.current) {
+        const v = villainRef.current;
 
-      // VILLAIN
-      if (villain) {
         if (level === 3) {
-          villain.chaosTimer++;
-          if (villain.chaosTimer % 12 === 0) {
-            villain.speed = Math.random() * 8 + 4;
+          v.chaosTimer++;
+          if (v.chaosTimer % 12 === 0) {
+            v.speed = Math.random() * 8 + 4;
           }
         }
 
-        villain.x -= villain.speed;
-        ctx.drawImage(villainImgRef.current, villain.x, villain.y, villain.w, villain.h);
+        v.x -= v.speed;
+        ctx.drawImage(villainImgRef.current, v.x, v.y, v.w, v.h);
 
-        if (villain.x <= hero.x + hero.w) {
+        if (v.x <= hero.x + hero.w) {
           endGame();
           return;
         }
@@ -136,7 +155,8 @@ export default function Game() {
         ctx.fillStyle = "orange";
         ctx.fillRect(b.x, b.y, 8, 4);
 
-        if (villain && b.x < villain.x + villain.w && b.x + 8 > villain.x) {
+        const v = villainRef.current;
+        if (v && b.x < v.x + v.w && b.x + 8 > v.x) {
           villainRef.current = null;
           bulletsRef.current = [];
 
@@ -164,9 +184,9 @@ export default function Game() {
       cancelAnimationFrame(animationRef.current);
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [level, levelComplete]);
+  }, [level, isCounting]);
 
-  /* ---------- GAME LOGIC ---------- */
+  /* ---------- GAME STATE ---------- */
   function levelPassed() {
     cancelAnimationFrame(animationRef.current);
     saveScore(level, score);
@@ -175,8 +195,9 @@ export default function Game() {
 
   function continueNextLevel() {
     if (level === 3) return endGame();
-    killsRef.current = 0;
+
     bulletsRef.current = [];
+    killsRef.current = 0;
     setKills(0);
     setLevelComplete(false);
     setLevel((l) => l + 1);
@@ -198,18 +219,22 @@ export default function Game() {
   }
 
   return (
-    <div style={{ 
-            backgroundImage:`url(${bg})`,
-            backgroundSize:'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }} className="min-h-screen bg-gray-700 flex flex-col">
+    <div
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: "cover",
+      }}
+      className="min-h-screen flex flex-col"
+    >
       <h3 className="text-center text-white py-3">
         Level: {level} | Score: {score} | Kills: {kills}
       </h3>
 
       <div className="flex-1 flex items-center justify-center">
-        <canvas ref={canvasRef} className="bg-black/60 border-black  rounded-xl shadow-lg" />
+        <canvas
+          ref={canvasRef}
+          className="bg-black/60 border rounded-xl shadow-lg"
+        />
       </div>
 
       <div className="pb-6 flex justify-center">
@@ -221,9 +246,19 @@ export default function Game() {
         </button>
       </div>
 
+      {isCounting && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <h1 className="text-7xl font-extrabold text-orange-400 animate-pulse">
+            {countdown === 0 ? "GO!" : countdown}
+          </h1>
+        </div>
+      )}
+
       {levelComplete && (
         <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 text-white">
-          <h1 className="text-3xl font-bold mb-4">🎉 Level {level} Completed</h1>
+          <h1 className="text-3xl font-bold mb-4">
+            🎉 Level {level} Completed
+          </h1>
           <button
             onClick={continueNextLevel}
             className="px-6 py-2 bg-green-500 rounded-lg"
